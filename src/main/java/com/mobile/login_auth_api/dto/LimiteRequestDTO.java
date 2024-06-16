@@ -8,7 +8,7 @@ import java.time.YearMonth;
 
 public record LimiteRequestDTO(
         @NotBlank @NotNull
-        String email,
+        Long userId,
         @NotBlank @NotNull
         BigDecimal limite,
         @NotBlank @NotNull

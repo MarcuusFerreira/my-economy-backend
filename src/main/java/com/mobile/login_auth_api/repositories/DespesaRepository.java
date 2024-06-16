@@ -1,6 +1,7 @@
 package com.mobile.login_auth_api.repositories;
 
 import com.mobile.login_auth_api.domain.despesa.Despesa;
+import com.mobile.login_auth_api.domain.user.User;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -29,5 +30,7 @@ public interface DespesaRepository extends JpaRepository<Despesa, String> {
     @Transactional
     @Query("UPDATE Despesa d SET d.dataExclusao = :dataExclusao WHERE d.id = :id")
     int deleteDespesa(@Param("dataExclusao") LocalDateTime dataExclusao, @Param("id") String id);
+
+    List<Despesa> findByUserAndMesReferencia(User user, YearMonth mesReferencia);
 
 }

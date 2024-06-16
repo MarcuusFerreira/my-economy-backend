@@ -18,7 +18,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(unique = true, nullable = false)
     private String email;
     private String name;
     private String password;
@@ -28,6 +30,22 @@ public class User {
     @OneToMany
     private List<Limite> listaLimites;
 
-    public User(String email, String name, String password, LocalDate birthday) {}
+    public User(String email, String name, String password, LocalDate birthday) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.birthday = birthday;
+    }
 
+    @Override
+    public String toString() {
+        return new StringBuilder()
+                .append("User Details:\n")
+                .append("ID: ").append(id).append("\n")
+                .append("Email: ").append(email).append("\n")
+                .append("Name: ").append(name).append("\n")
+                .append("Password: ").append(password).append("\n")
+                .append("Birthday: ").append(birthday).append("\n")
+                .toString();
+    }
 }

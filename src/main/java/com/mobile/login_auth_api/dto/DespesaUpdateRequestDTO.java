@@ -10,7 +10,7 @@ public record DespesaUpdateRequestDTO(
         @NotBlank @NotNull
         String id,
         @NotBlank @NotNull
-        String email,
+        Long userId,
         @NotBlank @NotNull
         String descricao,
         @NotBlank @NotNull

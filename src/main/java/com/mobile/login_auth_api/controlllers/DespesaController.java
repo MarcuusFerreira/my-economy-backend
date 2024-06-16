@@ -27,7 +27,7 @@ public class DespesaController {
     @PostMapping("/register")
     public ResponseEntity<?> cadastrarDespesa(@RequestBody DespesaRequestDTO body) {
         try {
-            User user = userService.findUser(body.email());
+            User user = userService.findUser(body.userId());
             if (validateDateService.validateYearMonth(body.mesReferencia())){
                 throw new RuntimeException("Mês informado é anterior ao mês atual!");
             }
@@ -47,7 +47,7 @@ public class DespesaController {
             if (validateDateService.validateYearMonth(body.mesReferencia())){
                 throw new RuntimeException("Mês informado é anterior ao mês atual!");
             }
-            User user = userService.findUser(body.email());
+            User user = userService.findUser(body.userId());
             Despesa despesa = new Despesa(body.id(), user, body.descricao(), body.valor(), body.mesReferencia());
             despesa = despesaRepository.save(despesa);
             DespesaResponseDTO responseDTO = new DespesaResponseDTO(despesa.getId(), despesa.getDescricao(), despesa.getValor(), despesa.getMesReferencia());

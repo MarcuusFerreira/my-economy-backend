@@ -8,7 +8,7 @@ import java.time.YearMonth;
 
 public record DespesaRequestDTO(
         @NotBlank @NotNull
-        String email,
+        Long userId,
         @NotBlank @NotNull
         String descricao,
         @NotBlank @NotNull
