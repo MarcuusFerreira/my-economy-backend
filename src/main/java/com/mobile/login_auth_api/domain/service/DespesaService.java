@@ -26,7 +26,7 @@ public class DespesaService {
         List<Despesa> despesas = despesaRepository.findByMesReferenciaAndDataExclusaoIsNull(currentMonth);
         return despesas.stream()
                 .map(Despesa::getValor)
-                .filter(Objects::nonNull) // Filtra valores nulos
-                .reduce(BigDecimal.ZERO, BigDecimal::add); // Soma todos os valores
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 }

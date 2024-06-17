@@ -33,22 +33,16 @@ public class LimiteController {
     @PostMapping("/register")
     public ResponseEntity<?> cadastrarDespesa(@RequestBody LimiteRequestDTO body) {
         try {
-            // Verifica se o usuário existe
             User user = userService.findUser(body.userId());
             if (user == null) {
                 throw new RuntimeException("Usuário não encontrado!");
             }
-
-            // Valida o limite
             if (body.limite() == null || body.limite().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new RuntimeException("Limite deve ser maior que zero!");
             }
 
-            // Cria e salva o novo limite
             Limite limite = new Limite(body.limite(), body.mesReferencia(), user);
             limite = limiteRepository.save(limite);
-
-            // Retorna a resposta de sucesso
             return ResponseEntity.ok(new LimiteResponseDTO(limite.getId(), limite.getLimite(), limite.getMesReferencia()));
         } catch (RuntimeException exception) {
 
@@ -86,6 +80,7 @@ public class LimiteController {
         List<LimiteResponseDTO> lista = new ArrayList<>();
         List<Limite> dados = limiteRepository.findByUserAndDataExclusaoIsNull(user);
         for (Limite limite : dados) {
+            limite.toString();
             LimiteResponseDTO dto = new LimiteResponseDTO(limite.getId(), limite.getLimite(), limite.getMesReferencia());
             lista.add(dto);
         }

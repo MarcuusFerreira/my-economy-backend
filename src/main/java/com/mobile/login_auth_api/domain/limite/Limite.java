@@ -2,10 +2,7 @@ package com.mobile.login_auth_api.domain.limite;
 
 import com.mobile.login_auth_api.domain.user.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +14,7 @@ import java.time.YearMonth;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Limite {
 
     @Id @GeneratedValue(strategy = GenerationType.UUID)
