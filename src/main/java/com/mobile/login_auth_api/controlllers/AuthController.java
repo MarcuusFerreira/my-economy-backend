@@ -28,7 +28,7 @@ public class AuthController {
         User user = this.userRepository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("User not found"));
         if(passwordEncoder.matches(body.password(), user.getPassword())) {
             String token = this.tokenService.generateToken(user);
-            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(user.getId(), user.getEmail(), user.getName(), user.getBirthday(), token);
+            LoginResponseDTO loginResponseDTO = new LoginResponseDTO(user.getId(), user.getEmail(), user.getName(), user.getBirthday().plusDays(1), token);
             return ResponseEntity.ok(loginResponseDTO);
         }
         return ResponseEntity.badRequest().build();
@@ -42,7 +42,7 @@ public class AuthController {
                 User newUser = new User(body.email(), body.name(), passwordEncoder.encode(body.password()), body.birthday());
                 newUser = this.userRepository.save(newUser);
                 String token = this.tokenService.generateToken(newUser);
-                return ResponseEntity.ok(new LoginResponseDTO(newUser.getId(), newUser.getEmail(), newUser.getName(), newUser.getBirthday(), token));
+                return ResponseEntity.ok(new LoginResponseDTO(newUser.getId(), newUser.getEmail(), newUser.getName(), newUser.getBirthday().plusDays(1), token));
             }
         }
         return ResponseEntity.badRequest().build();

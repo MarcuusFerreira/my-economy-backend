@@ -15,8 +15,9 @@ import java.util.Optional;
 
 public interface LimiteRepository extends JpaRepository<Limite, String> {
 
-    @Query("SELECT e FROM Limite e WHERE e.user.id = :id AND e.dataExclusao IS NOT NULL")
-    List<Limite> findByUserAndNotNullDataExclusao(@Param("id") Long id);
+    List<Limite> findByUserAndDataExclusaoIsNull(User user);
+
+    Optional<Limite> findByMesReferencia(YearMonth mesReferencia);
 
     @Modifying
     @Transactional

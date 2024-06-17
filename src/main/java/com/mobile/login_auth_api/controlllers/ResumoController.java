@@ -2,7 +2,6 @@ package com.mobile.login_auth_api.controlllers;
 
 import com.mobile.login_auth_api.domain.service.ResumoService;
 import com.mobile.login_auth_api.domain.user.User;
-import com.mobile.login_auth_api.dto.ResumoDTO;
 import com.mobile.login_auth_api.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +27,8 @@ public class ResumoController {
             System.out.println("Vou retornar ");
             return ResponseEntity.ok(resumoService.obterResumoFinanceiro(user));
         } catch (RuntimeException exception) {
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            exception.printStackTrace();
+            return ResponseEntity.badRequest().body(exception);
         }
     }
 }

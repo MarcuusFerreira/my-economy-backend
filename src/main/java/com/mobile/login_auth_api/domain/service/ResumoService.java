@@ -36,19 +36,27 @@ public class ResumoService {
 
         BigDecimal economizado = valorLimite.subtract(totalDespesas);
 
-
         String categoriaEconomia;
-        BigDecimal percentualEconomizado = economizado.divide(valorLimite, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
+        BigDecimal percentualEconomizado;
 
-        if (percentualEconomizado.compareTo(BigDecimal.valueOf(30)) > 0) {
-            categoriaEconomia = "Economizou muito";
-        } else if (percentualEconomizado.compareTo(BigDecimal.ZERO) > 0) {
-            categoriaEconomia = "Economizou";
+        if (valorLimite.compareTo(BigDecimal.ZERO) == 0) {
+            // Se o valor do limite for zero, evitar a divisão por zero
+            percentualEconomizado = BigDecimal.ZERO;
+            categoriaEconomia = "Não economizou"; // Assumindo que não há economia possível sem um limite
         } else {
-            categoriaEconomia = "Não economizou";
+            percentualEconomizado = economizado.divide(valorLimite, 2, BigDecimal.ROUND_HALF_UP).multiply(BigDecimal.valueOf(100));
+            if (percentualEconomizado.compareTo(BigDecimal.valueOf(30)) > 0) {
+                categoriaEconomia = "Economizou muito";
+            } else if (percentualEconomizado.compareTo(BigDecimal.ZERO) > 0) {
+                categoriaEconomia = "Economizou";
+            } else {
+                categoriaEconomia = "Não economizou";
+            }
         }
+
         ResumoDTO resumo = new ResumoDTO(valorLimite, totalDespesas, economizado, categoriaEconomia);
 
         return resumo;
     }
+
 }
