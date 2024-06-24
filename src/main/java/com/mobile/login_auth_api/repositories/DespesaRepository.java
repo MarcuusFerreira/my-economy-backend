@@ -17,6 +17,8 @@ import java.util.Optional;
 @Repository
 public interface DespesaRepository extends JpaRepository<Despesa, String> {
 
+    Optional<Despesa> findByIdAndDataExclusaoIsNull(String id);
+
     List<Despesa> findByUserAndDataExclusaoIsNullOrderByMesReferenciaAsc(User user);
 
     @Query("SELECT e from Despesa e where e.user.id = :id AND e.mesReferencia = :mesAno AND e.dataExclusao IS NOT NULL")
@@ -33,4 +35,6 @@ public interface DespesaRepository extends JpaRepository<Despesa, String> {
     List<Despesa> findByMesReferenciaAndDataExclusaoIsNull(YearMonth mesReferencia);
 
     List<Despesa> findByUserIdAndMesReferenciaAndDataExclusaoIsNullOrderByMesReferenciaAsc(Long userId, YearMonth mesReferencia);
+
+    List<Despesa> findByUserIdAndDataExclusaoIsNull(Long userId);
 }

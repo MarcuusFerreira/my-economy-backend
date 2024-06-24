@@ -50,15 +50,15 @@ public class DespesaController {
     @PutMapping("/update")
     public ResponseEntity<?> atualizarDespesa(@RequestBody DespesaUpdateRequestDTO body) {
         try{
-            despesaRepository.findByIdAndNotNullDataExclusao(body.id()).orElseThrow(() -> new RuntimeException("Despesa não encontrada"));
             if (validateDateService.validateYearMonth(body.mesReferencia())){
                 throw new RuntimeException("Mês informado é anterior ao mês atual!");
             }
-            User user = userService.findUser(body.userId());
-            Despesa despesa = new Despesa(body.id(), user, body.descricao(), body.valor(), body.mesReferencia());
+            Despesa despesa = despesaRepository.findByIdAndDataExclusaoIsNull(body.id()).orElseThrow(() -> new RuntimeException("Despesa não encontrada"));
+            despesa.setMesReferencia(body.mesReferencia());
+            despesa.setDescricao(body.descricao());
+            despesa.setValor(body.valor());
             despesa = despesaRepository.save(despesa);
-            DespesaResponseDTO responseDTO = new DespesaResponseDTO(despesa.getId(), despesa.getDescricao(), despesa.getValor(), despesa.getMesReferencia());
-            return ResponseEntity.ok(responseDTO);
+            return ResponseEntity.ok(new ApiResponse("Despesa atualizada com sucesso!"));
         } catch (RuntimeException exception) {
             return ResponseEntity.badRequest().body(new ApiResponse(exception.getMessage()));
         }
