@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface LimiteRepository extends JpaRepository<Limite, String> {
 
-    List<Limite> findByUserAndDataExclusaoIsNull(User user);
+    List<Limite> findByUserAndDataExclusaoIsNullOrderByMesReferencia(User user);
 
     Optional<Limite> findByMesReferencia(YearMonth mesReferencia);
 
@@ -29,5 +29,7 @@ public interface LimiteRepository extends JpaRepository<Limite, String> {
 
     boolean existsByMesReferenciaAndUserIdAndDataExclusaoIsNull(YearMonth mesReferencia, Long userId);
 
-    List<Limite> findByUserIdAndDataExclusaoIsNull(Long userId);
+    List<Limite> findByUserIdAndDataExclusaoIsNullOrderByMesReferenciaAsc(Long userId);
+
+    List<Limite> findByUserIdAndMesReferenciaAndDataExclusaoIsNull(Long userId, YearMonth mesReferencia);
 }

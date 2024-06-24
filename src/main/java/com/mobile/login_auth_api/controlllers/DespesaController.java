@@ -85,7 +85,7 @@ public class DespesaController {
     @GetMapping("/get")
     public ResponseEntity<?> getDespesas(@RequestParam("userId") Long userId) {
         User user = userService.findUser(userId);
-        List<DespesaResponseDTO> dados = despesaRepository.findByUserAndDataExclusaoIsNull(user).stream().map(DespesaResponseDTO::response).toList();
+        List<DespesaResponseDTO> dados = despesaRepository.findByUserAndDataExclusaoIsNullOrderByMesReferenciaAsc(user).stream().map(DespesaResponseDTO::response).toList();
         return ResponseEntity.ok().body(dados);
     }
 
@@ -98,5 +98,11 @@ public class DespesaController {
     public ResponseEntity<BigDecimal> getSomaDespesasForCurrentMonth() {
         BigDecimal somaDespesas = despesaService.getSomaDespesasForCurrentMonth();
         return ResponseEntity.ok(somaDespesas);
+    }
+
+    @GetMapping("/get-despesa")
+    public ResponseEntity<?> getDespesa(@RequestParam("userId") Long userId, @RequestParam("mesReferencia") YearMonth mesReferencia) {
+        List<DespesaResponseDTO> responseDTOS = despesaRepository.findByUserIdAndMesReferenciaAndDataExclusaoIsNullOrderByMesReferenciaAsc(userId, mesReferencia).stream().map(DespesaResponseDTO::response).toList();
+        return ResponseEntity.ok(responseDTOS);
     }
 }

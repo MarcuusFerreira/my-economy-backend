@@ -31,9 +31,4 @@ public class Limite {
         this.mesReferencia = mesReferencia;
         this.user = user;
     }
-    public Limite(String id, BigDecimal limite, YearMonth mesReferencia) {
-        this.id = id;
-        this.limite = limite;
-        this.mesReferencia = mesReferencia;
-    }
 }

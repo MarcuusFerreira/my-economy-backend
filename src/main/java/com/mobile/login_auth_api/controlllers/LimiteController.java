@@ -89,22 +89,20 @@ public class LimiteController {
     @GetMapping("/get")
     public ResponseEntity<?> buscarLimitePorId(@RequestParam("userId") Long userId) {
         User user = userService.findUser(userId);
-        List<LimiteResponseDTO> dados = limiteRepository.findByUserAndDataExclusaoIsNull(user).stream().map(LimiteResponseDTO::response).toList();
+        List<LimiteResponseDTO> dados = limiteRepository.findByUserAndDataExclusaoIsNullOrderByMesReferencia (user).stream().map(LimiteResponseDTO::response).toList();
         return ResponseEntity.ok(dados);
-    }
-
-    @GetMapping("/current-month")
-    public ResponseEntity<?> getCurrentMonthLimite() {
-        Optional<Limite> limite = limiteService.getLimiteForCurrentMonth();
-        if (limite.isPresent()) {
-            return ResponseEntity.ok(limite.get().getLimite());
-        }
-        return ResponseEntity.badRequest().build();
     }
 
     @GetMapping("/lista-filtro")
     public ResponseEntity<?> listarFiltros(@RequestParam("userId") Long userId) {
-        List<FiltroDTO> filtros = limiteRepository.findByUserIdAndDataExclusaoIsNull(userId).stream().map(FiltroDTO::createFiltroDTO).toList();
+        List<FiltroDTO> filtros = limiteRepository.findByUserIdAndDataExclusaoIsNullOrderByMesReferenciaAsc(userId).stream().map(FiltroDTO::createFiltroDTO).toList();
         return ResponseEntity.ok(filtros);
+    }
+
+    @GetMapping("/get-limite")
+    public ResponseEntity<?> buscarLimite(@RequestParam("userId") Long userId, @RequestParam("mesReferencia") YearMonth mesReferencia) {
+        List<LimiteResponseDTO> limites = limiteRepository.findByUserIdAndMesReferenciaAndDataExclusaoIsNull(userId, mesReferencia).stream().map(LimiteResponseDTO::response).toList();
+        return ResponseEntity.ok(limites);
+
     }
 }
