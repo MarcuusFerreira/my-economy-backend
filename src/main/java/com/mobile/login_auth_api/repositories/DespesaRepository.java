@@ -19,8 +19,8 @@ public interface DespesaRepository extends JpaRepository<Despesa, String> {
 
     List<Despesa> findByUserAndDataExclusaoIsNull(User user);
 
-    @Query("SELECT e from Despesa e where e.user.email = :email AND e.mesReferencia = :mesAno AND e.dataExclusao IS NOT NULL")
-    List<Despesa> findByEmailAndMesAndNotNullDataExclusao(@Param("email")String email, @Param("mesAno") YearMonth mesAno);
+    @Query("SELECT e from Despesa e where e.user.id = :id AND e.mesReferencia = :mesAno AND e.dataExclusao IS NOT NULL")
+    List<Despesa> findByIdAndMesAndNotNullDataExclusao(@Param("id")String id, @Param("mesAno") YearMonth mesAno);
 
     @Query("SELECT e FROM Despesa e WHERE e.id = :id AND e.dataExclusao IS NOT NULL")
     Optional<Despesa> findByIdAndNotNullDataExclusao(@Param("id") String id);

@@ -2,6 +2,7 @@ package com.mobile.login_auth_api.repositories;
 
 import com.mobile.login_auth_api.domain.limite.Limite;
 import com.mobile.login_auth_api.domain.user.User;
+import com.mobile.login_auth_api.dto.FiltroDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,7 @@ public interface LimiteRepository extends JpaRepository<Limite, String> {
 
     Optional<Limite> findByUserAndMesReferencia(User user, YearMonth mesReferencia);
 
+    boolean existsByMesReferenciaAndUserIdAndDataExclusaoIsNull(YearMonth mesReferencia, Long userId);
+
+    List<Limite> findByUserIdAndDataExclusaoIsNull(Long userId);
 }

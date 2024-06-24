@@ -10,7 +10,7 @@ import java.time.YearMonth;
 
 @Getter
 @Setter
-@Table(name = "despesas")
+@Table(name = "limite")
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,7 +20,6 @@ public class Limite {
     @Id @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     private BigDecimal limite;
-    @Column(unique = true, nullable = false)
     private YearMonth mesReferencia;
     private LocalDateTime dataExclusao;
     @ManyToOne

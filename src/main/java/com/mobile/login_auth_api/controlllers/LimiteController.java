@@ -5,17 +5,15 @@ import com.mobile.login_auth_api.domain.service.LimiteService;
 import com.mobile.login_auth_api.domain.service.UserService;
 import com.mobile.login_auth_api.domain.service.ValidateDateService;
 import com.mobile.login_auth_api.domain.user.User;
-import com.mobile.login_auth_api.dto.LimiteRequestDTO;
-import com.mobile.login_auth_api.dto.LimiteResponseDTO;
-import com.mobile.login_auth_api.dto.LimiteUpdateRequestDTO;
+import com.mobile.login_auth_api.dto.*;
 import com.mobile.login_auth_api.repositories.LimiteRepository;
-import com.mobile.login_auth_api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,51 +38,59 @@ public class LimiteController {
             if (body.limite() == null || body.limite().compareTo(BigDecimal.ZERO) <= 0) {
                 throw new RuntimeException("Limite deve ser maior que zero!");
             }
-
+            if (validateDateService.validateYearMonth(body.mesReferencia())) {
+                throw new RuntimeException("Não é possivel criar limite de meses anteriores ao atual!");
+            }
+            if (limiteRepository.existsByMesReferenciaAndUserIdAndDataExclusaoIsNull(body.mesReferencia(), body.userId())) {
+                throw new RuntimeException("Já existe limite cadastrado para esse mes!");
+            }
             Limite limite = new Limite(body.limite(), body.mesReferencia(), user);
             limite = limiteRepository.save(limite);
             return ResponseEntity.ok(new LimiteResponseDTO(limite.getId(), limite.getLimite(), limite.getMesReferencia()));
         } catch (RuntimeException exception) {
-
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(exception.getMessage()));
         }
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public ResponseEntity<?> atualizarLimite(@RequestBody LimiteUpdateRequestDTO body) {
         try {
             if (validateDateService.validateYearMonth(body.mesReferencia())) {
                 throw new RuntimeException("Mês informado é anterior ao mês atual!");
             }
-            Limite limite = new Limite(body.id(), body.limite(), body.mesReferencia());
+            Limite limite = limiteRepository.findById(body.id()).orElseThrow(() -> new RuntimeException("Limite Não encontrado"));
+            limite.setLimite(body.limite());
+            limite.setMesReferencia(body.mesReferencia());
             limite = limiteRepository.save(limite);
-            return ResponseEntity.ok(new LimiteResponseDTO(limite.getId(), limite.getLimite(), limite.getMesReferencia()));
+            return ResponseEntity.ok(new ApiResponse("Limite atualizado com sucesso!"));
         } catch (RuntimeException exception) {
-            return ResponseEntity.badRequest().body(exception.getMessage());
+            return ResponseEntity.badRequest().body(new ApiResponse(exception.getMessage()));
         }
     }
 
     @DeleteMapping("/remove/{id}")
     public ResponseEntity<?> removerLimite(@PathVariable String id) {
-        int update = limiteRepository.deleteLimite(LocalDateTime.now(), id);
-        System.out.println("atualizou " + update);
-        if (update == 1) {
-            return ResponseEntity.ok("Limite removido com sucesso!");
+        try {
+            Limite limite = limiteRepository.findById(id).orElseThrow(() -> new RuntimeException("Limite não existe"));
+            if(validateDateService.validateYearMonth(limite.getMesReferencia())) {
+                throw new RuntimeException("Não é possivel excluir limites de meses anteriores ao atual!");
+            }
+            int update = limiteRepository.deleteLimite(LocalDateTime.now(), id);
+            System.out.println("atualizou " + update);
+            if (update == 1) {
+                return ResponseEntity.ok("Limite removido com sucesso!");
+            }
+        } catch (RuntimeException exception) {
+            return ResponseEntity.badRequest().body(new ApiResponse(exception.getMessage()));
         }
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.internalServerError().body("Erro ao remover limite!");
     }
 
     @GetMapping("/get")
-    public ResponseEntity<?> buscarLimitePorEmail(@RequestParam("userId") Long userId) {
+    public ResponseEntity<?> buscarLimitePorId(@RequestParam("userId") Long userId) {
         User user = userService.findUser(userId);
-        List<LimiteResponseDTO> lista = new ArrayList<>();
-        List<Limite> dados = limiteRepository.findByUserAndDataExclusaoIsNull(user);
-        for (Limite limite : dados) {
-            limite.toString();
-            LimiteResponseDTO dto = new LimiteResponseDTO(limite.getId(), limite.getLimite(), limite.getMesReferencia());
-            lista.add(dto);
-        }
-        return ResponseEntity.ok(lista);
+        List<LimiteResponseDTO> dados = limiteRepository.findByUserAndDataExclusaoIsNull(user).stream().map(LimiteResponseDTO::response).toList();
+        return ResponseEntity.ok(dados);
     }
 
     @GetMapping("/current-month")
@@ -94,5 +100,11 @@ public class LimiteController {
             return ResponseEntity.ok(limite.get().getLimite());
         }
         return ResponseEntity.badRequest().build();
+    }
+
+    @GetMapping("/lista-filtro")
+    public ResponseEntity<?> listarFiltros(@RequestParam("userId") Long userId) {
+        List<FiltroDTO> filtros = limiteRepository.findByUserIdAndDataExclusaoIsNull(userId).stream().map(FiltroDTO::createFiltroDTO).toList();
+        return ResponseEntity.ok(filtros);
     }
 }
